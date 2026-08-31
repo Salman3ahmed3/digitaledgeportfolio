@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Brand design tokens (reference / non-Tailwind consumers).
+ * The canonical source for Tailwind utilities is tailwind.config.ts — these
+ * CSS variables mirror the palette for any raw-CSS needs.
+ */
+:root {
+  --color-navy-900: #0a1f44;
+  --color-navy-700: #142c5c;
+  --color-blue-600: #1e5bff;
+  --color-blue-500: #3b72ff;
+  --color-blue-100: #e8f0ff;
+  --color-slate-900: #0f172a;
+  --color-slate-600: #475569;
+  --color-slate-100: #f1f5f9;
+  --color-white: #ffffff;
+  --color-off-white: #fafbfc;
+  --gradient-primary: linear-gradient(135deg, #0a1f44 0%, #1e5bff 100%);
+  --gradient-cta: linear-gradient(135deg, #1e5bff 0%, #3b72ff 100%);
+}
+
+@layer base {
+  * {
+    @apply border-ink-100;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-white font-sans text-ink-900 antialiased;
+    line-height: 1.65;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-navy-900;
+    text-wrap: balance;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--color-blue-600);
+    color: #fff;
+  }
+
+  /* Consistent, visible focus states site-wide */
+  :focus-visible {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Skip-to-content link, visually hidden until focused */
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only fixed left-4 top-4 z-[100] rounded-lg bg-navy-900 px-4 py-2 font-600 text-white shadow-lg;
+  }
+
+  .font-600 {
+    font-weight: 600;
+  }
+  .font-700 {
+    font-weight: 700;
+  }
+  .font-800 {
+    font-weight: 800;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
