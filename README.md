@@ -167,7 +167,8 @@ ConvertKit, Mailchimp, HubSpot…), wire the `onSubmit` in
 ## ✅ Continuous integration & dependencies
 
 Every pull request (and every push to the production branch) runs
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) on Node 22:
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) on Node 24 (the version
+the Vercel project builds with):
 
 ```bash
 npm ci
