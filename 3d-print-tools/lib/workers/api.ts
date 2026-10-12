@@ -12,6 +12,8 @@ import { loadFont, textToVector, type FontKey } from "@/lib/engines/text";
 import { buildImage } from "@/lib/engines/image/build";
 import type { ImageSettings } from "@/lib/engines/image/settings";
 import type { Rgba } from "@/lib/engines/image/pixels";
+import { buildLithophane, type LithoResult } from "@/lib/engines/lithophane/build";
+import type { LithoSettings } from "@/lib/engines/lithophane/settings";
 import { UserError, type BuildResult } from "@/lib/engines/types";
 
 export interface ParsedPart {
@@ -115,6 +117,15 @@ export const api = {
   /** Image → heightmap relief or traced logo. */
   async buildImage(img: Rgba, settings: ImageSettings): Promise<BuildResult> {
     return wrap(async () => finish(buildImage(settings.mode === "extrude" ? await getManifold() : (null as never), img, settings)));
+  },
+
+  /** Cropped image → lithophane. Thickness arrays drive the backlit preview. */
+  async buildLithophane(img: Rgba, settings: LithoSettings): Promise<LithoResult> {
+    return wrap(async () => {
+      const font = settings.text.trim() ? await loadFont(settings.textFont) : undefined;
+      const r = buildLithophane(await getManifold(), img, settings, font);
+      return Comlink.transfer(r, [...transferables(r.parts), ...r.thickness.map((t) => t.buffer as ArrayBuffer)]);
+    });
   },
 
   /** Text → glyph outlines → solids, in one cancellable job. */

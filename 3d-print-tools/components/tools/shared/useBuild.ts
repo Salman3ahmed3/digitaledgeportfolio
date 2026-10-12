@@ -12,13 +12,13 @@ import { track } from "@/lib/analytics";
  * Debounced, cancellable rebuild. `job` is re-run whenever `deps` change
  * (after `delay` ms); stale results are dropped.
  */
-export function useBuild(
+export function useBuild<R extends BuildResult = BuildResult>(
   tool: string,
-  job: ((api: Remote<GeometryApi>) => Promise<BuildResult>) | null,
+  job: ((api: Remote<GeometryApi>) => Promise<R>) | null,
   deps: unknown[],
   delay = 300,
 ) {
-  const [result, setResult] = useState<BuildResult | null>(null);
+  const [result, setResult] = useState<R | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const jobRef = useRef(job);

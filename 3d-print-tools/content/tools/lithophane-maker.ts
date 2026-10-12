@@ -1,0 +1,60 @@
+import type { ToolPage } from "../types";
+
+export const lithophaneMaker: ToolPage = {
+  slug: "lithophane-maker",
+  engine: "lithophane",
+  category: "make",
+  shortName: "Lithophane Maker",
+  cardText: "Flat, curved, cylinder, heart and circle lithophanes with a backlit preview.",
+  title: "Lithophane Maker — Free Online Lithophane Generator (STL)",
+  metaDescription:
+    "Make a lithophane STL from any photo: flat, curved, cylinder night light, heart or circle. Backlit preview, frames, text, stand and hanging hole. Free, no upload.",
+  h1: "Lithophane Maker",
+  valueLine: "Turn a photo into a lithophane and see how it glows before you print it.",
+  intro: [
+    "A lithophane is a thin, textured print that looks like a plain white relief until light shines through it. Then the thin areas glow and the thick areas stay dark, and your photo appears in surprising detail. 3D printers are very good at them, which is why lithophanes are one of the most popular personalised gifts in the hobby.",
+    "This maker turns any photo into a lithophane in your browser. Choose a flat panel, a curved arc, a cylinder that works as a night light, a heart or a circle. Crop and adjust the photo with live brightness, contrast and gamma controls, then switch the 3D preview to Backlit to see roughly how it will look when lit. Add a border or deeper frame, a stand, a hanging tab or hole, and engraved or raised text such as a name or date.",
+    "Thickness follows the classic rule — dark areas thick, light areas thin — between limits you set. The model is a closed solid ready to slice, and estimates of weight, filament and print time help you plan. Your photos never leave your device.",
+  ],
+  howTo: [
+    { name: "Choose a photo", text: "Drop a JPG, PNG or WebP photo, or paste one. Faces, pets and high-contrast scenes work best." },
+    { name: "Pick a shape and size", text: "Choose flat, curved, cylinder, heart or circle and set the width (or diameter and height for a cylinder)." },
+    { name: "Crop and adjust", text: "Drag the 2D preview to reposition, zoom to crop, and use brightness, contrast or auto-enhance until the preview looks good." },
+    { name: "Check the backlit preview", text: "Switch the 3D view to Backlit to see how light will pass through. Add a frame, text, stand or hanging hole if you like." },
+    { name: "Download and print", text: "Download the STL and print in white PLA at 100% infill, standing upright." },
+  ],
+  settings: [
+    { name: "Shape", text: "Flat panel, curved arc (30–180°), cylinder for a night light, heart or circle." },
+    { name: "Width / diameter", text: "Size of the picture area. For a cylinder, set the outer diameter and height; the photo wraps all the way round." },
+    { name: "Min and max thickness", text: "The thinnest (brightest) and thickest (darkest) walls. 0.6–0.8 mm and 3.0 mm are reliable with a 0.4 mm nozzle." },
+    { name: "Resolution", text: "Number of points along the long edge. 180 balances detail and speed; up to 400 for large prints." },
+    { name: "Crop, zoom and position", text: "Choose proportions and drag the preview to frame the subject. Heart and circle shapes use a square crop." },
+    { name: "Brightness, contrast, gamma, auto-enhance", text: "Adjust the photo before converting. Lithophanes benefit from strong contrast; auto-enhance stretches the tones to the full range." },
+    { name: "Border and frame", text: "A border is a solid edge at full thickness; a frame is deeper for extra strength and a finished look. On cylinders these become top and bottom rims." },
+    { name: "Stand, hanging hole and text", text: "Add a foot for flat panels, a tab, loop or inside hole for hanging, and a line of engraved or raised text in a band at the top or bottom." },
+    { name: "Preview modes", text: "Printed shows the model in white plastic, Backlit simulates light passing through (brightness falls exponentially with thickness), and Thickness colours the walls by depth." },
+  ],
+  useCases: [
+    { title: "Personal gifts", text: "A curved lithophane of a family photo with the names engraved underneath, printed on a stand for a shelf." },
+    { title: "Night lights", text: "A cylinder with a base and a 40 mm light hole that fits over an LED tea light." },
+    { title: "Window decorations", text: "Heart or circle lithophanes with a hanging tab that glow in daylight." },
+  ],
+  printTips: [
+    "Use white PLA and 100% infill — any gap inside shows up as a blotch when lit.",
+    "Print upright for the smoothest tones; flat panels need a brim or the stand option.",
+    "Layer height of 0.12 mm or less gives finer gradations in the picture.",
+    "Light it from 2–5 cm behind with a diffuse warm-white LED. Never use a real candle inside a plastic cylinder.",
+  ],
+  faq: [
+    { q: "What size image works best for a lithophane?", a: "Any photo over about 600 px on the long edge has enough detail, because the mesh uses 100–400 points across. Contrast and a clear subject matter much more than pixel count." },
+    { q: "What thickness should a lithophane be?", a: "A minimum of 0.6–0.8 mm and a maximum of about 3 mm work well with a 0.4 mm nozzle and white PLA. Thinner minimums glow brighter but may print with gaps." },
+    { q: "Why does my lithophane look dark or washed out?", a: "Washed out: increase contrast or max thickness. Too dark: lower max thickness or brighten the photo. The Backlit preview helps you compare." },
+    { q: "Should I print a lithophane flat or standing up?", a: "Standing up usually gives the best detail. The model is exported upright; flat panels need a brim or the stand option." },
+    { q: "What infill should I use?", a: "100%. Lithophanes rely on solid plastic of exact thickness." },
+    { q: "Is the backlit preview accurate?", a: "It's a simulation where brightness falls off exponentially with thickness. Real results depend on your filament, light source and printer, so treat it as a guide." },
+    { q: "Are my photos uploaded?", a: "No. Your photo is processed by your browser and never leaves your device." },
+    { q: "Can I add text to a lithophane?", a: "Yes, on flat and curved shapes. Text sits in a band at the top or bottom and can be engraved or raised." },
+  ],
+  related: ["image-to-stl", "jpg-to-stl", "stl-viewer", "keychain-maker", "text-to-stl"],
+  updated: "2026-10-12",
+};

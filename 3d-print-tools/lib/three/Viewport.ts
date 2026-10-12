@@ -8,8 +8,10 @@ export type Shading = "smooth" | "flat" | "wireframe";
 export interface ViewMesh {
   positions: Float32Array;
   indices?: Uint32Array;
-  /** Optional per-vertex RGB (0–1); used when the material mode is "vertex". */
+  /** Optional per-vertex RGB (0–1). */
   colors?: Float32Array;
+  /** Render vertex colours without lighting (e.g. light shining through). */
+  unlit?: boolean;
   color?: string;
 }
 
@@ -40,7 +42,6 @@ export class Viewport {
   private frame = 0;
   private shading: Shading = "smooth";
   private modelColor = "#d8dde6";
-  private vertexMode = false;
   private showGrid = true;
   private showAxes = false;
   private measuring = false;
@@ -103,11 +104,12 @@ export class Viewport {
   }
 
   private material(m: ViewMesh) {
-    if (this.vertexMode && m.colors) {
+    if (m.colors && m.unlit) {
       return new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: this.shading === "wireframe", side: THREE.DoubleSide });
     }
     return new THREE.MeshStandardMaterial({
-      color: m.color ?? this.modelColor,
+      color: m.colors ? 0xffffff : (m.color ?? this.modelColor),
+      vertexColors: !!m.colors,
       roughness: 0.65,
       metalness: 0.05,
       flatShading: this.shading === "flat",
@@ -136,21 +138,6 @@ export class Viewport {
     this.clearMeasure();
     this.updateGrid();
     if (fit) this.fit();
-    this.requestRender();
-  }
-
-  /** Swap per-vertex colours without rebuilding geometry (e.g. backlit preview). */
-  setVertexColors(colors: (Float32Array | undefined)[], enabled: boolean) {
-    this.vertexMode = enabled;
-    this.group.children.forEach((obj, i) => {
-      const mesh = obj as THREE.Mesh;
-      const c = colors[i];
-      if (c) {
-        mesh.geometry.setAttribute("color", new THREE.BufferAttribute(c, 3));
-        this.meshes[i].colors = c;
-      }
-      this.replaceMaterial(mesh, this.meshes[i]);
-    });
     this.requestRender();
   }
 

@@ -1,0 +1,15 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch({ args: ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"] });
+const p = await b.newPage({ viewport: { width: 1300, height: 950 } });
+p.on("pageerror", (e) => console.log("pageerror:", e.message));
+await p.goto("http://localhost:4173/lithophane-maker");
+await p.getByTestId("file-input").setInputFiles("tests/fixtures/photo.jpg");
+await p.waitForTimeout(3000);
+await p.getByLabel("Shape").selectOption(process.argv[2]);
+await p.getByRole("button", { name: process.argv[3] }).click();
+await p.waitForTimeout(3500);
+await p.getByTestId("preview-canvas").scrollIntoViewIfNeeded();
+await p.evaluate(() => window.scrollBy(0, -120));
+await p.waitForTimeout(500);
+await p.screenshot({ path: process.argv[4] });
+await b.close();
