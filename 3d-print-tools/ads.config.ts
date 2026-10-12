@@ -52,4 +52,9 @@ export const ANALYTICS = {
 
 export const isProd = process.env.NODE_ENV === "production";
 export const adsActive = isProd && ADS.enabled && ADS.client !== "";
+/**
+ * Layout check without real ads: `NEXT_PUBLIC_ADS_PREVIEW=1 npm run build`
+ * renders grey, labelled boxes in every ad position (no Google scripts load).
+ */
+export const adsPreview = process.env.NEXT_PUBLIC_ADS_PREVIEW === "1";
 export const analyticsActive = isProd && ANALYTICS.measurementId !== "";

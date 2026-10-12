@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ToolProps } from "../ToolMount";
 import type { ExportFormat } from "@/content/types";
 import { DropZone } from "@/components/ui/DropZone";
@@ -18,7 +18,7 @@ import { cornerColor, type DepthCurve, type Rgba } from "@/lib/engines/image/pix
 import { baseName } from "@/lib/download";
 import { fileType, track } from "@/lib/analytics";
 
-export default function ImageTool({ slug, preset, defaultFormat }: ToolProps) {
+export default function ImageTool({ slug, preset, defaultFormat, initialFiles }: ToolProps) {
   const { settings: s, update, reset } = useSettings<ImageSettings>(`pb:${slug}`, IMAGE_DEFAULTS, preset as Partial<ImageSettings>);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [fileName, setFileName] = useState("");
@@ -53,6 +53,16 @@ export default function ImageTool({ slug, preset, defaultFormat }: ToolProps) {
       track("error", { tool: slug, error_code: "decode_failed" });
     }
   }, [slug]);
+
+  // Files dropped on the placeholder before this engine loaded.
+  const consumed = useRef(false);
+  useEffect(() => {
+    if (consumed.current || !initialFiles?.length) return;
+    consumed.current = true;
+    void onFiles(initialFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const img = useMemo<Rgba | null>(() => (bitmap ? rasterize(bitmap, s.maxEdge) : null), [bitmap, s.maxEdge]);
   const autoBg = useMemo(() => (img ? cornerColor(img) : "#ffffff"), [img]);

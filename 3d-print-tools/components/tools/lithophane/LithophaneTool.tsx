@@ -60,7 +60,7 @@ function formatTime(s: number) {
   return h ? `${h} h ${m} min` : `${m} min`;
 }
 
-export default function LithophaneTool({ slug, preset, defaultFormat }: ToolProps) {
+export default function LithophaneTool({ slug, preset, defaultFormat, initialFiles }: ToolProps) {
   const { settings: s, update, setSettings, reset } = useSettings<LithoSettings>(`pb:${slug}`, LITHO_DEFAULTS, preset as Partial<LithoSettings>);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [fileName, setFileName] = useState("");
@@ -98,6 +98,16 @@ export default function LithophaneTool({ slug, preset, defaultFormat }: ToolProp
       track("error", { tool: slug, error_code: "decode_failed" });
     }
   }, [slug, setSettings]);
+
+  // Files dropped on the placeholder before this engine loaded.
+  const consumed = useRef(false);
+  useEffect(() => {
+    if (consumed.current || !initialFiles?.length) return;
+    consumed.current = true;
+    void onFiles(initialFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const aspect = bitmap ? targetAspect(s, bitmap.width, bitmap.height) : 1;
   const img = useMemo<Rgba | null>(() => {

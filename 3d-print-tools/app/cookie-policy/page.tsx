@@ -2,7 +2,7 @@ import { StaticPage } from "@/components/layout/StaticPage";
 import { pageMetadata } from "@/lib/seo";
 import { SITE } from "@/site.config";
 
-export const metadata = pageMetadata({ title: "Cookie Policy", description: `Cookies and local storage used by ${SITE.name}.`, path: "/cookie-policy" });
+export const metadata = pageMetadata({ title: "Cookie Policy", description: `The cookies and local storage ${SITE.name} uses for settings, advertising consent, ads and analytics, and how to change your choices.`, path: "/cookie-policy" });
 
 export default function CookiePolicy() {
   return (

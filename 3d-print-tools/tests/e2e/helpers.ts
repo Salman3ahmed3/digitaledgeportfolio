@@ -30,3 +30,12 @@ export function trackErrors(page: Page) {
   page.on("pageerror", (e) => errors.push(e.message));
   return errors;
 }
+
+/** Simulate a first interaction (which loads the 3D engine), retrying until hydration has happened. */
+export async function activate(page: Page) {
+  let x = 5;
+  await expect(async () => {
+    await page.mouse.move(x++, 5);
+    await expect(page.getByTestId("tool-placeholder")).toBeHidden({ timeout: 1000 });
+  }).toPass({ timeout: 20_000 });
+}

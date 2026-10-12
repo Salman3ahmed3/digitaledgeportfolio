@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { ExportFormat } from "@/content/types";
 import { FORMATS } from "@/lib/geometry/export";
-import { toolBySlug } from "@/content/tools";
+import { useToolLinks } from "./links";
 
 /**
  * Format picker + primary download button, followed by a short
@@ -34,7 +34,8 @@ export function DownloadBar({
       setState("error");
     }
   };
-  const suggestions = related.map(toolBySlug).filter(Boolean).slice(0, 3);
+  const links = useToolLinks();
+  const suggestions = related.filter((r) => links[r]).slice(0, 3);
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
@@ -69,9 +70,9 @@ export function DownloadBar({
                 Make another
               </button>
             )}
-            {suggestions.map((t) => (
-              <Link key={t!.slug} href={`/${t!.slug}`} className="text-brand-600 underline dark:text-brand-100">
-                {t!.shortName}
+            {suggestions.map((slug) => (
+              <Link key={slug} href={`/${slug}`} className="text-brand-600 underline dark:text-brand-100">
+                {links[slug]}
               </Link>
             ))}
           </div>

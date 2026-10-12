@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { ADS, adsActive, type AdFormat } from "@/ads.config";
+import { ADS, adsActive, adsPreview, type AdFormat } from "@/ads.config";
 
 /**
  * Display ad unit with space reserved up-front (see .ad-slot in globals.css) so
@@ -35,6 +35,16 @@ export function AdSlot({ slot, format, className = "" }: { slot: keyof typeof AD
     return () => window.removeEventListener("ads:ready", push);
   }, [excluded, slotId]);
 
+  if (adsPreview && !excluded) {
+    return (
+      <aside aria-label="Advertisement" className={`my-8 ${className}`} data-testid="ad-slot">
+        <p className="mb-1 text-center text-[11px] uppercase tracking-wide text-[var(--muted)]">Advertisement</p>
+        <div className="ad-slot flex items-center justify-center rounded bg-black/5 text-xs text-[var(--muted)] dark:bg-white/5" data-format={format}>
+          {slot} · {format}
+        </div>
+      </aside>
+    );
+  }
   if (!adsActive || excluded || !slotId) return null;
   return (
     <aside aria-label="Advertisement" className={`my-8 ${className}`}>

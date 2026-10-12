@@ -2,7 +2,7 @@ import { StaticPage } from "@/components/layout/StaticPage";
 import { pageMetadata } from "@/lib/seo";
 import { SITE } from "@/site.config";
 
-export const metadata = pageMetadata({ title: "Terms of Use", description: `Terms for using ${SITE.name}.`, path: "/terms" });
+export const metadata = pageMetadata({ title: "Terms of Use", description: `Terms of use for ${SITE.name}: free browser-based 3D printing tools provided as is, your rights to your files, and food-safety notes.`, path: "/terms" });
 
 export default function Terms() {
   return (

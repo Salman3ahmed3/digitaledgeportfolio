@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectDownload, expectModel, trackErrors, upload } from "./helpers";
+import { activate, expectDownload, expectModel, trackErrors, upload } from "./helpers";
 
 async function setNumber(page: import("@playwright/test").Page, label: string, value: string) {
   const input = page.getByLabel(`${label} value`);
@@ -55,6 +55,7 @@ test("Keychain maker: change shape and loop", async ({ page }) => {
 
 test("Cookie cutter maker: set width and height", async ({ page }) => {
   await page.goto("/cookie-cutter-maker");
+  await activate(page); // first interaction loads the 3D engine
   await page.getByText("No file handy? Try a sample").click();
   await expectModel(page);
   await setNumber(page, "Cutter width", "60");
@@ -65,6 +66,7 @@ test("Cookie cutter maker: set width and height", async ({ page }) => {
 
 test("Text to STL: type text and change font", async ({ page }) => {
   await page.goto("/text-to-stl");
+  await activate(page);
   await expectModel(page);
   await page.getByLabel("Text").fill("Maker");
   await page.getByLabel("Font").selectOption("bebas");

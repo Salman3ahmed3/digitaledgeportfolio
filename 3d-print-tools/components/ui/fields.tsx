@@ -38,7 +38,9 @@ export function NumberField({
   useEffect(() => setText(String(shown)), [shown]);
   const commit = (raw: string) => {
     const n = parseFloat(raw);
-    if (Number.isFinite(n)) onChange(Math.min(max, Math.max(min, n / k)));
+    if (!Number.isFinite(n)) return setText(String(shown));
+    const v = Math.min(max, Math.max(min, n / k));
+    if (Math.abs(v - value) > 1e-9) onChange(v); // blur after Enter shouldn't trigger a rebuild
     else setText(String(shown));
   };
   return (

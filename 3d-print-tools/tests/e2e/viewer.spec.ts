@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectDownload, expectModel, trackErrors, upload } from "./helpers";
+import { activate, expectDownload, expectModel, trackErrors, upload } from "./helpers";
 
 const CASES: [string, string[]][] = [
   ["binary STL", ["cube-binary.stl"]],
@@ -46,3 +46,27 @@ for (const [path, files] of PRESETS) {
     await expectDownload(page, "stl");
   });
 }
+
+test("3D engine is not downloaded until the visitor interacts", async ({ page }) => {
+  const chunks: string[] = [];
+  page.on("request", (r) => r.url().includes("/_next/static/chunks/") && chunks.push(r.url()));
+  await page.goto("/stl-viewer");
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByTestId("tool-placeholder")).toBeVisible();
+  const before = chunks.length;
+  await activate(page);
+  expect(chunks.length).toBeGreaterThan(before);
+});
+
+test("no third-party requests while using a tool (files stay local)", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    const u = new URL(r.url());
+    if (!["localhost", "127.0.0.1"].includes(u.hostname) && u.protocol.startsWith("http")) external.push(r.url());
+  });
+  await page.goto("/stl-viewer");
+  await upload(page, "cube-binary.stl");
+  await expectModel(page);
+  await expectDownload(page, "obj");
+  expect(external).toEqual([]);
+});

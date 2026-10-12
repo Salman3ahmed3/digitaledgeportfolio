@@ -51,7 +51,7 @@ function arrange(models: LoadedModel[]) {
   });
 }
 
-export default function ViewerTool({ slug, preset, defaultFormat }: ToolProps) {
+export default function ViewerTool({ slug, preset, defaultFormat, initialFiles }: ToolProps) {
   const focus = (preset?.focus as string | undefined) ?? "stl";
   const [models, setModels] = useState<LoadedModel[]>([]);
   const [busy, setBusy] = useState(false);
@@ -99,6 +99,16 @@ export default function ViewerTool({ slug, preset, defaultFormat }: ToolProps) {
       setDistance(null);
     }
   }, [slug]);
+
+  // Files dropped on the placeholder before this engine loaded.
+  const consumed = useRef(false);
+  useEffect(() => {
+    if (consumed.current || !initialFiles?.length) return;
+    consumed.current = true;
+    void onFiles(initialFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // Topology stats off the main thread.
   useEffect(() => {

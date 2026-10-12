@@ -1,4 +1,5 @@
 import type { ToolPage } from "@/content/types";
+import { TOOLS } from "@/content/tools";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { ToolMount } from "@/components/tools/ToolMount";
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -17,7 +18,7 @@ export function ToolPageLayout({ tool }: { tool: ToolPage }) {
       </header>
 
       <section aria-label="Tool" className="mt-6">
-        <ToolMount slug={tool.slug} engine={tool.engine} preset={tool.preset} defaultFormat={tool.defaultFormat} />
+        <ToolMount slug={tool.slug} engine={tool.engine} preset={tool.preset} defaultFormat={tool.defaultFormat} links={Object.fromEntries(TOOLS.map((t) => [t.slug, t.shortName]))} />
       </section>
 
       <div className="mt-10 grid gap-10 xl:grid-cols-[minmax(0,1fr)_300px]">

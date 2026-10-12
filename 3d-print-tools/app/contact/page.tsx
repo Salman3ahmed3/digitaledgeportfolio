@@ -2,7 +2,7 @@ import { StaticPage } from "@/components/layout/StaticPage";
 import { pageMetadata } from "@/lib/seo";
 import { SITE } from "@/site.config";
 
-export const metadata = pageMetadata({ title: "Contact", description: `Contact the ${SITE.name} team.`, path: "/contact" });
+export const metadata = pageMetadata({ title: "Contact", description: `Contact the ${SITE.name} team with bug reports, feature requests or questions about the free 3D printing tools.`, path: "/contact" });
 
 export default function Contact() {
   return (

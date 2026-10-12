@@ -1,6 +1,7 @@
 // Minimal static server for the exported site (used by Playwright and
 // for local previews). Resolves "/foo" to "/foo.html" like most static hosts.
 import { createServer } from "node:http";
+import { gzipSync } from "node:zlib";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 
@@ -30,6 +31,10 @@ createServer(async (req, res) => {
     res.end(await readFile(join(dir, "404.html")).catch(() => "Not found"));
     return;
   }
-  res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream" });
-  res.end(await readFile(file));
+  // gzip text assets like a real static host would (keeps Lighthouse numbers realistic).
+  const body = await readFile(file);
+  const type = types[extname(file)] ?? "application/octet-stream";
+  const compress = /text|javascript|json|svg|xml|wasm/.test(type) && /gzip/.test(req.headers["accept-encoding"] ?? "");
+  res.writeHead(200, { "content-type": type, ...(compress ? { "content-encoding": "gzip" } : {}) });
+  res.end(compress ? gzipSync(body) : body);
 }).listen(port, () => console.log(`serving ${dir} on http://localhost:${port}`));

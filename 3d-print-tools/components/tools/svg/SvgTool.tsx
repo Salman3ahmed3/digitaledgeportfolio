@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ToolProps } from "../ToolMount";
 import type { ExportFormat } from "@/content/types";
 import { DropZone } from "@/components/ui/DropZone";
@@ -27,7 +27,7 @@ const MODES: { value: SvgMode; label: string }[] = [
   { value: "cookie", label: "Cutter" },
 ];
 
-export default function SvgTool({ slug, preset, defaultFormat, initialSvg }: ToolProps & { initialSvg?: { text: string; name: string } }) {
+export default function SvgTool({ slug, preset, defaultFormat, initialFiles, initialSvg }: ToolProps & { initialSvg?: { text: string; name: string } }) {
   const { settings: s, update, reset } = useSettings<SvgSettings>(`pb:${slug}`, SVG_DEFAULTS, preset as Partial<SvgSettings>, ["source"]);
   const [svgText, setSvgText] = useState<string | null>(initialSvg?.text ?? null);
   const [fileName, setFileName] = useState(initialSvg?.name ?? "");
@@ -83,6 +83,16 @@ export default function SvgTool({ slug, preset, defaultFormat, initialSvg }: Too
     }
     loadText(await f.text(), f.name);
   }, [slug, loadText]);
+
+  // Files dropped on the placeholder before this engine loaded.
+  const consumed = useRef(false);
+  useEffect(() => {
+    if (consumed.current || !initialFiles?.length) return;
+    consumed.current = true;
+    void onFiles(initialFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const input = isText ? null : parsed.input;
   const hidden = useMemo(() => {

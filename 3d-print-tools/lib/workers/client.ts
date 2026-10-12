@@ -1,45 +1,52 @@
 import * as Comlink from "comlink";
 import type { GeometryApi } from "./api";
 
-let worker: Worker | null = null;
-let remote: Comlink.Remote<GeometryApi> | null = null;
+type Handle = { worker: Worker; remote: Comlink.Remote<GeometryApi> };
 
+function spawn(): Handle {
+  const worker = new Worker(new URL("./geometry.worker.ts", import.meta.url), { type: "module" });
+  return { worker, remote: Comlink.wrap<GeometryApi>(worker) };
+}
+
+// Two workers: `main` handles parsing, analysis and exports and is never
+// restarted; `builder` runs preview rebuilds and may be killed to cancel one.
+let main: Handle | null = null;
+let builder: Handle | null = null;
+
+/** Worker for one-off jobs (parse, analyze, export). Never cancelled. */
 export function geometry(): Comlink.Remote<GeometryApi> {
-  if (!remote) {
-    worker = new Worker(new URL("./geometry.worker.ts", import.meta.url), { type: "module" });
-    remote = Comlink.wrap<GeometryApi>(worker);
-  }
-  return remote;
+  main ??= spawn();
+  return main.remote;
 }
 
-/** Kill the worker (cancels any in-flight job). The next call starts a fresh one. */
-export function resetGeometry() {
-  worker?.terminate();
-  worker = null;
-  if (remote) remote[Comlink.releaseProxy]();
-  remote = null;
+function resetBuilder() {
+  if (!builder) return;
+  builder.worker.terminate();
+  builder.remote[Comlink.releaseProxy]();
+  builder = null;
 }
 
-let busy = 0;
+let latest = 0;
+let inFlight = false;
 /**
- * "Latest wins" runner for preview rebuilds: if a previous job is still
- * running it is cancelled by restarting the worker, so the UI never waits for
- * stale work. Rejected (cancelled) jobs resolve to null.
+ * "Latest wins" runner for preview rebuilds: if a previous build is still
+ * running it is cancelled by restarting the build worker, so the UI never
+ * waits for stale work. Superseded jobs resolve to null.
  */
 export async function runLatest<T>(job: (api: Comlink.Remote<GeometryApi>) => Promise<T>): Promise<T | null> {
-  const id = ++busy;
-  if (id > 1 && inFlight) resetGeometry();
+  const id = ++latest;
+  if (inFlight) resetBuilder();
   inFlight = true;
+  builder ??= spawn();
   try {
-    const result = await job(geometry());
-    return id === busy ? result : null;
+    const result = await job(builder.remote);
+    return id === latest ? result : null;
   } catch (e) {
-    if (id !== busy) return null;
+    if (id !== latest) return null;
     throw e;
   } finally {
-    if (id === busy) inFlight = false;
+    if (id === latest) inFlight = false;
   }
 }
-let inFlight = false;
 
 export { Comlink };
