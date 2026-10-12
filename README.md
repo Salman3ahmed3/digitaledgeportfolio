@@ -1,5 +1,7 @@
 # Digital Edge — Marketing Agency Landing Page
 
+[![CI](https://github.com/Salman3ahmed3/digitaledgeportfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Salman3ahmed3/digitaledgeportfolio/actions/workflows/ci.yml)
+
 A high-conversion, single-page marketing site for **Digital Edge**, built to book
 free 30-minute Growth Audit calls and grow an email list via a lead-magnet.
 
@@ -161,6 +163,25 @@ ConvertKit, Mailchimp, HubSpot…), wire the `onSubmit` in
   images and confirm they're sized and use `next/image`.
 
 ---
+
+## ✅ Continuous integration & dependencies
+
+Every pull request (and every push to the production branch) runs
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) on Node 22:
+
+```bash
+npm ci
+npm run lint
+npm run build
+```
+
+Dependabot ([`.github/dependabot.yml`](.github/dependabot.yml)) opens weekly
+update PRs for npm packages and GitHub Actions; security updates are opened as
+soon as an alert has a fix. Let CI pass and check the Vercel preview before merging.
+
+> **Branches:** the default branch is currently `claude/digital-edge-landing-7x230n`,
+> and Vercel deploys Production from it. Don't rename or delete it until the
+> production branch has been switched in Vercel.
 
 ## 🌐 Deploy to Vercel
 
