@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24 # matches the Vercel project setting (Node.js 24.x)
           cache: npm
 
       - name: Install dependencies
