@@ -27,13 +27,19 @@ const MODES: { value: SvgMode; label: string }[] = [
   { value: "cookie", label: "Cutter" },
 ];
 
-export default function SvgTool({ slug, preset, defaultFormat }: ToolProps) {
+export default function SvgTool({ slug, preset, defaultFormat, initialSvg }: ToolProps & { initialSvg?: { text: string; name: string } }) {
   const { settings: s, update, reset } = useSettings<SvgSettings>(`pb:${slug}`, SVG_DEFAULTS, preset as Partial<SvgSettings>, ["source"]);
-  const [svgText, setSvgText] = useState<string | null>(null);
-  const [fileName, setFileName] = useState("");
+  const [svgText, setSvgText] = useState<string | null>(initialSvg?.text ?? null);
+  const [fileName, setFileName] = useState(initialSvg?.name ?? "");
   const [fileKey, setFileKey] = useState(0);
   const [inputError, setInputError] = useState("");
-  const [bgColor, setBgColor] = useState<string | null>(null);
+  const [bgColor, setBgColor] = useState<string | null>(() => {
+    try {
+      return initialSvg ? detectBackground(parseSvg(initialSvg.text, "low")) : null;
+    } catch {
+      return null;
+    }
+  });
   const [overrides, setOverrides] = useState<Record<string, LayerOverride>>({});
   const [format, setFormat] = useState<ExportFormat>(defaultFormat ?? "stl");
   const isText = s.source === "text";

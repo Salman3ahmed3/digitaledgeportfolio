@@ -9,6 +9,9 @@ import { parseStl } from "@/lib/geometry/parse/stl";
 import { getManifold } from "@/lib/geometry/manifold";
 import { buildVector, unionParts, type VectorBuildInput } from "@/lib/engines/svg/build";
 import { loadFont, textToVector, type FontKey } from "@/lib/engines/text";
+import { buildImage } from "@/lib/engines/image/build";
+import type { ImageSettings } from "@/lib/engines/image/settings";
+import type { Rgba } from "@/lib/engines/image/pixels";
 import { UserError, type BuildResult } from "@/lib/engines/types";
 
 export interface ParsedPart {
@@ -107,6 +110,11 @@ export const api = {
   /** SVG / text → solids. UserErrors are re-thrown with a code prefix so the UI can show them. */
   async buildVector(b: VectorBuildInput): Promise<BuildResult> {
     return wrap(async () => finish(buildVector(await getManifold(), b)));
+  },
+
+  /** Image → heightmap relief or traced logo. */
+  async buildImage(img: Rgba, settings: ImageSettings): Promise<BuildResult> {
+    return wrap(async () => finish(buildImage(settings.mode === "extrude" ? await getManifold() : (null as never), img, settings)));
   },
 
   /** Text → glyph outlines → solids, in one cancellable job. */
