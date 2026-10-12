@@ -7,3 +7,4 @@ public/wasm/
 test-results/
 playwright-report/
 .lighthouse/
+scripts/.shot.mjs

@@ -8,7 +8,7 @@ export const stlViewer: ToolPage = {
   cardText: "Open STL, OBJ, 3MF, PLY and GLB files. Measure, check watertightness, convert.",
   title: "Free Online STL Viewer — View, Measure & Convert 3D Files",
   metaDescription:
-    "View STL, OBJ, 3MF, PLY and GLB files in your browser. Check dimensions, volume and watertightness, measure between points, take screenshots and convert formats. No upload.",
+    "View STL, OBJ, 3MF, PLY and GLB files in your browser. Check size, volume and watertightness, measure, screenshot and convert formats. No upload.",
   h1: "Online STL Viewer",
   valueLine: "Open a 3D file to inspect it, measure it and check it's printable — the file stays on your computer.",
   intro: [

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import type { Engine, ExportFormat } from "@/content/types";
+import { UnitsProvider } from "@/components/ui/units";
 
 const Loading = () => (
   <div className="flex min-h-[560px] items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] lg:min-h-[620px]">
@@ -33,7 +34,9 @@ export function ToolMount({ engine, ...props }: ToolProps & { engine: Engine }) 
           This tool runs in your browser and needs JavaScript and WebGL. Please enable JavaScript to use it.
         </div>
       </noscript>
-      <Comp {...props} />
+      <UnitsProvider>
+        <Comp {...props} />
+      </UnitsProvider>
     </>
   );
 }
