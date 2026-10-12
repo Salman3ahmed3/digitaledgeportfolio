@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 export type ViewPreset = "front" | "back" | "left" | "right" | "top" | "bottom" | "iso";
 export type Shading = "smooth" | "flat" | "wireframe";
@@ -122,11 +123,13 @@ export class Viewport {
     this.meshes = meshes;
     this.clearGroup();
     for (const m of meshes) {
-      const g = new THREE.BufferGeometry();
+      let g = new THREE.BufferGeometry();
       g.setAttribute("position", new THREE.BufferAttribute(m.positions, 3));
       if (m.indices) g.setIndex(new THREE.BufferAttribute(m.indices, 1));
       if (m.colors) g.setAttribute("color", new THREE.BufferAttribute(m.colors, 3));
-      g.computeVertexNormals();
+      // Keep hard edges crisp on indexed meshes (shared vertices would otherwise smooth across them).
+      if (m.indices && m.indices.length < 6_000_000) g = toCreasedNormals(g, Math.PI / 6);
+      else g.computeVertexNormals();
       g.computeBoundingBox();
       this.group.add(new THREE.Mesh(g, this.material(m)));
     }

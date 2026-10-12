@@ -7,6 +7,9 @@ import { analyze, weld, type MeshStats, type Part } from "@/lib/geometry/mesh";
 import { exportParts } from "@/lib/geometry/export";
 import { parseStl } from "@/lib/geometry/parse/stl";
 import { getManifold } from "@/lib/geometry/manifold";
+import { buildVector, unionParts, type VectorBuildInput } from "@/lib/engines/svg/build";
+import { loadFont, textToVector, type FontKey } from "@/lib/engines/text";
+import { UserError, type BuildResult } from "@/lib/engines/types";
 
 export interface ParsedPart {
   name: string;
@@ -101,6 +104,29 @@ export const api = {
     return total;
   },
 
+  /** SVG / text → solids. UserErrors are re-thrown with a code prefix so the UI can show them. */
+  async buildVector(b: VectorBuildInput): Promise<BuildResult> {
+    return wrap(async () => finish(buildVector(await getManifold(), b)));
+  },
+
+  /** Text → glyph outlines → solids, in one cancellable job. */
+  async buildText(t: { text: string; font: FontKey; letterSpacing: number }, b: Omit<VectorBuildInput, "input">): Promise<BuildResult> {
+    return wrap(async () => {
+      const input = textToVector(await loadFont(t.font), t.text, { letterSpacing: t.letterSpacing });
+      return finish(buildVector(await getManifold(), { ...b, input }));
+    });
+  },
+
+  /** Export generated parts. STL/PLY get a single boolean-unioned body. */
+  async exportBuilt(parts: { name: string; color?: string; positions: Float32Array; indices: Uint32Array }[], format: ExportFormat): Promise<Uint8Array> {
+    let ps: Part[] = parts.map((p) => ({ name: p.name, color: p.color, mesh: { positions: p.positions, indices: p.indices } }));
+    if ((format === "stl" || format === "ply") && ps.length > 1) {
+      ps = [{ name: "model", mesh: unionParts(await getManifold(), ps.map((p) => p.mesh)) }];
+    }
+    const out = exportParts(ps, format);
+    return Comlink.transfer(out, [out.buffer as ArrayBuffer]);
+  },
+
   /** Weld triangle soup (e.g. STL) into an indexed mesh before exporting. */
   exportParts(parts: { name: string; positions: Float32Array; indices?: Uint32Array; color?: string }[], format: ExportFormat): Uint8Array {
     const ps: Part[] = parts.map((p) => ({
@@ -114,3 +140,17 @@ export const api = {
 };
 
 export type GeometryApi = typeof api;
+
+/** Comlink loses Error subclasses; encode UserError as "USER:<code>:<message>". */
+async function wrap<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    if (e instanceof UserError) throw new Error(`USER:${e.code}:${e.message}`);
+    throw e;
+  }
+}
+
+function finish(r: BuildResult): BuildResult {
+  return Comlink.transfer(r, transferables(r.parts));
+}

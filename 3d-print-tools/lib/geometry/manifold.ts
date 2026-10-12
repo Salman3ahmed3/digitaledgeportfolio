@@ -4,15 +4,21 @@ import type { Mesh } from "./mesh";
 
 export type MF = ManifoldToplevel;
 let instance: Promise<MF> | null = null;
+let wasmUrl: string | undefined;
+
+/** Browser workers call this once with the public URL of manifold.wasm. Node loads it from node_modules. */
+export function setManifoldWasmUrl(url: string) {
+  wasmUrl = url;
+}
 
 /**
  * Lazily initialise manifold-3d. In the browser the .wasm is served from
- * /wasm/manifold.wasm (copied there by scripts/copy-wasm.mjs).
+ * /wasm/manifold.wasm (copied there by scripts/copy-wasm.mjs) — see setManifoldWasmUrl.
  */
 export function getManifold(): Promise<MF> {
   if (!instance) {
-    const isNode = typeof process !== "undefined" && !!process.versions?.node && typeof self === "undefined";
-    instance = Module(isNode ? undefined : { locateFile: () => "/wasm/manifold.wasm" }).then((m) => {
+    const url = wasmUrl;
+    instance = Module(url ? { locateFile: () => url } : undefined).then((m) => {
       m.setup();
       return m;
     });
