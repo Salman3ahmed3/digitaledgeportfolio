@@ -95,7 +95,16 @@ export function keyringLoop(
   mf: MF, keep: Keep, plate: CrossSection, style: LoopStyle, position: LoopPosition, holeD: number,
 ): { add: CrossSection | null; hole: CrossSection | null } {
   if (style === "none") return { add: null, hole: null };
-  const b = plate.bounds();
+  // Attach to the island that reaches furthest in the loop direction, so a
+  // plate made of separate pieces never gets a tab floating in a gap.
+  const islands = plate.decompose();
+  const score = (c: CrossSection) => {
+    const bb = c.bounds();
+    return position === "top" ? bb.max[1] : position === "left" ? -bb.min[0] : bb.max[0];
+  };
+  const host = islands.reduce((best, c) => (score(c) > score(best) ? c : best), islands[0] ?? plate);
+  const b = host.bounds();
+  for (const c of islands) c.delete();
   const ring = Math.max(2, holeD * 0.5); // wall around the hole
   const R = holeD / 2 + ring;
   const cx = position === "top" ? (b.min[0] + b.max[0]) / 2 : position === "left" ? b.min[0] : b.max[0];

@@ -9,3 +9,4 @@ playwright-report/
 .lighthouse/
 scripts/.shot.mjs
 scripts/.shot*.mjs
+scripts/.preview.mjs

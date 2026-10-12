@@ -106,3 +106,17 @@ describe("logo extrude (traced)", () => {
     expect(() => buildLogo(mf, { data, width: 10, height: 10 }, S({ mode: "extrude", threshold: 100 }))).toThrow(/No shape was found/);
   });
 });
+
+describe("keyring loop on a multi-piece logo", () => {
+  it("tab is attached to the plate (single connected body)", async () => {
+    const mf = await getManifold();
+    const r = buildLogo(mf, png("logo.png"), S({ mode: "extrude", logoBase: "outline", keyring: true }));
+    const base = r.parts.find((p) => p.name === "Base")!;
+    const m = new mf.Manifold(new mf.Mesh({ numProp: 3, vertProperties: base.positions, triVerts: base.indices }));
+    const pieces = m.decompose();
+    // two islands (ring + bar) — the tab must merge into one of them, not add a third
+    expect(pieces.length).toBe(2);
+    pieces.forEach((x) => x.delete());
+    m.delete();
+  });
+});
