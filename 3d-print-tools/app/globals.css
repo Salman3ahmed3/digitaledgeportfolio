@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #eef7ff;
+  --color-brand-100: #d9edff;
+  --color-brand-500: #2b7fff;
+  --color-brand-600: #1667e8;
+  --color-brand-700: #1152bd;
+  --color-accent-500: #f97316;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  color-scheme: light;
+}
+.dark {
+  --bg: #0b1120;
+  --surface: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #1f2937;
+  color-scheme: dark;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Long-form copy */
+.prose-tool h2 { font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 1rem; letter-spacing: -0.01em; }
+.prose-tool h3 { font-size: 1.125rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+.prose-tool p { margin: 0.75rem 0; line-height: 1.7; color: var(--text); }
+.prose-tool ul, .prose-tool ol { margin: 0.75rem 0 0.75rem 1.25rem; line-height: 1.7; }
+.prose-tool ul { list-style: disc; }
+.prose-tool ol { list-style: decimal; }
+.prose-tool li { margin: 0.35rem 0; }
+.prose-tool a { color: var(--color-brand-600); text-decoration: underline; text-underline-offset: 2px; }
+.dark .prose-tool a { color: #7fb4ff; }
+.prose-tool table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+.prose-tool th, .prose-tool td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; vertical-align: top; }
+.prose-tool code { font-size: 0.9em; background: color-mix(in srgb, var(--border) 60%, transparent); padding: 0.1em 0.35em; border-radius: 4px; }
+
+/* Ad slots reserve space up front so loading an ad never shifts layout. */
+.ad-slot { display: block; width: 100%; overflow: hidden; }
+.ad-slot[data-format="responsive"] { min-height: 280px; }
+.ad-slot[data-format="in-content"] { min-height: 280px; }
+.ad-slot[data-format="sidebar"] { min-height: 600px; }
+@media (min-width: 768px) {
+  .ad-slot[data-format="responsive"] { min-height: 250px; }
+  .ad-slot[data-format="in-content"] { min-height: 250px; }
+}
+
+input[type="range"] { accent-color: var(--color-brand-600); }
